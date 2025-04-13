@@ -1,9 +1,9 @@
 import random
 word_list = ['cave', 'hangman', 'minecraft', 'backpack', 'grass', 'cumshot']
 
-def get_word(word):
-    word = random.choice(word_list)
-    return word
+def get_word():
+    return random.choice(word_list)
+     
 
 def display_hangman(tries):
     stages = [  # Final state: head, torso, both arms, and both legs
@@ -88,10 +88,17 @@ def play(word):
     print("Welcome to Hangman!")
     print(display_hangman(tries))
     print(word_completion)
-    print("\nYou have", tries, "tries to guess the word. Please enter a letter or a word.")
+    print("\nYou have", tries, "tries to guess the word. Please enter a letter or a word.\n")
 
     while not guessed and tries > 0:
-        guess = input()
+        print('\nGuessed letters:', ', '.join(guessed_letters))
+        guess = input('\nYour guess:').lower()
+        if guess in guessed_letters:
+            print('You have already guessed this letter. Try again.\n')
+            continue
+        guessed_letters.append(guess)
+        
+            
         if len(guess) == 1 and guess.isalpha():
             if guess in word:
                 word_completion = ''.join([guess if word[i] == guess else word_completion[i] for i in range(len(word))])
@@ -104,9 +111,10 @@ def play(word):
         elif len(guess) > 1 and guess.isalpha():
             if guess == word:
                 word_completion = word
-                print('Congratulations! You guessed the word!')
+                print('\nCongratulations! You guessed the word!')
                 guessed = True
-                print(word_completion)
+                print(word_completion.upper())
+                break
                 
             else:
                 tries -= 1
@@ -114,16 +122,21 @@ def play(word):
                 print(display_hangman(tries))
                 print(word_completion)
         else:
-            print('Please enter correct word or letter.')
+            print('\nPlease enter correct word or letter.')
         if word_completion == word and tries >= 1:
-            print('Congratulations! You guessed the word!')
+            print('\nCongratulations! You guessed the word!')
             print(word.upper())
-            break     
-
-    again = input('Wanna play again? (y/n)')
+            break 
+        elif tries == 0 and word_completion != word:
+            print('\nYou lost! The word was', word.upper())
+            break
+    
+    again = input('\nWanna play again? (y/n)')
     if again.lower() == 'y':
-        word = get_word(word_list)
+        word = get_word()
         play(word)
+    else:
+        print('\nThanks for playing!')    
 
-word = get_word(word_list)
+word = get_word()
 play(word)
